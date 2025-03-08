@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: document-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/documents
+    username: ${DB_USER:admin}
+    password: ${DB_PASS:admin}
+  jpa:
+    hibernate.ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_URL:http://localhost:8080/auth}/realms/medical
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+server:
+  port: 8081
+  servlet:
+    context-path: /api/documents
+
+# IPFS configuration
+ipfs:
+  host: ${IPFS_HOST:localhost}
+  port: ${IPFS_PORT:5001}
+  protocol: ${IPFS_PROTOCOL:http}
+  timeout: 60000
+
+# Blockchain service configuration
+blockchain-service:
+  url: ${BLOCKCHAIN_SERVICE_URL:http://localhost:8082/api/blockchain}
+
+# Keycloak settings
+keycloak:
+  auth-server-url: ${KEYCLOAK_URL:http://localhost:8080/auth}
+  realm: medical
+  resource: document-service
+  public-client: true
+
+# Logging settings
+logging:
+  level:
+    root: INFO
+    com.medical: DEBUG 

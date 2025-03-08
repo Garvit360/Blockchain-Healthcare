@@ -1,8 +1,8 @@
 spring:
   application:
-    name: user-management-service
+    name: blockchain-service
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:5432/medical
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/blockchain
     username: ${DB_USER:admin}
     password: ${DB_PASS:admin}
   jpa:
@@ -17,33 +17,28 @@ spring:
           issuer-uri: ${KEYCLOAK_URL:http://localhost:8080/auth}/realms/medical
 
 server:
-  port: 8080
+  port: 8082
   servlet:
-    context-path: /api/users
+    context-path: /api/blockchain
+
+# Blockchain configuration
+blockchain:
+  networkConfigPath: ${NETWORK_CONFIG_PATH:blockchain/network-config/connection-org1.yaml}
+  walletPath: ${WALLET_PATH:blockchain/wallet}
+  userName: ${BLOCKCHAIN_USER:admin}
+  channelName: ${CHANNEL_NAME:mychannel}
+  chaincodeName: ${CHAINCODE_NAME:medical-chaincode}
 
 # Keycloak settings
 keycloak:
   auth-server-url: ${KEYCLOAK_URL:http://localhost:8080/auth}
   realm: medical
-  resource: user-management-service
+  resource: blockchain-service
   public-client: true
-  bearer-only: true
-  enabled: true
-  principal-attribute: preferred_username
-  ssl-required: external
-
-# JWT Configuration
-jwt:
-  secret: ${JWT_SECRET:medical-platform-secret-key-very-long-and-secure-123456789}
-  expiration: 86400000  # 24 hours in milliseconds
-
-# Blockchain service configuration
-blockchain-service:
-  url: ${BLOCKCHAIN_SERVICE_URL:http://localhost:8082/api/blockchain}
 
 # Logging settings
 logging:
   level:
     root: INFO
     com.medical: DEBUG
-    org.keycloak: INFO 
+    org.hyperledger.fabric: INFO 

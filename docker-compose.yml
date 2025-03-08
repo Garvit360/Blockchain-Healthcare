@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:13-alpine
+    container_name: medical-postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_MULTIPLE_DATABASES: medical,documents,blockchain
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/db-migrations/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Keycloak for authentication
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.2
+    container_name: medical-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin
+      KC_FEATURES: token-exchange,admin-fine-grained-authz
+      KC_HTTP_RELATIVE_PATH: /auth
+    command: [ "start-dev" ]
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # IPFS node for document storage
+  ipfs:
+    image: ipfs/kubo:v0.17.0
+    container_name: medical-ipfs
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8081:8081"
+    volumes:
+      - ipfs-data:/data/ipfs
+      - ipfs-export:/export
+  # Hyperledger Fabric test network (separate setup required)
+  # This will be configured via scripts in blockchain/network-config directory
+
+volumes:
+  postgres-data:
+  ipfs-data:
+  ipfs-export:
