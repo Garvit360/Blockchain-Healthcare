@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/medical
+    username: ${DB_USER:admin}
+    password: ${DB_PASS:admin}
+  jpa:
+    hibernate.ddl-auto: validate
+keycloak:
+  auth-server-url: ${KEYCLOAK_URL:http://localhost:8080/auth} 

@@ -1,0 +1,88 @@
+Create a GitHub repository structure for a Java/Spring Boot blockchain medical platform with these components:
+
+1. **Root Directory Structure:**
+   - `backend/` (Spring Boot modules)
+     - `user-management-service/`
+       - `src/main/java/com/medical/user/`
+         - `config/` (Security, Keycloak)
+         - `controller/` (REST APIs)
+         - `service/` (Business logic)
+         - `repository/` (Spring Data JPA)
+         - `model/` (Entities/DTOs)
+       - `src/main/resources/`
+         - `application.yml`
+         - `keystore.p12`
+     - `document-service/` (IPFS integration)
+     - `blockchain-service/` (Hyperledger SDK)
+   - `frontend/` (React + TypeScript)
+     - `src/`
+       - `components/` (Role-based dashboards)
+       - `hooks/` (API hooks)
+       - `layouts/` (Admin/Doctor/Patient views)
+   - `blockchain/`
+     - `chaincode/` (Hyperledger Fabric Java chaincode)
+     - `network-config/` (connection-org1.yaml, crypto-config)
+   - `devops/`
+     - `docker/` (Dockerfiles for each service)
+     - `kubernetes/` (EKS/AKS manifests)
+     - `github-actions/` (CI/CD workflows)
+   - `docs/`
+     - `API-SPEC.md` (OpenAPI 3.0)
+     - `ARCHITECTURE.md`
+   - `scripts/`
+     - `db-migrations/` (Flyway/Liquibase)
+   - `config/`
+     - `vault/` (Terraform for secrets)
+   - `.gitignore` (Java/Node/IDE/Docker specific)
+   - `pom.xml` (Parent POM for multi-module)
+   - `README.md` (With Getting Started)
+
+2. **Key Files to Auto-Generate:**
+   - Spring Boot `application.yml` with profiles:
+     ```yaml
+     spring:
+       datasource:
+         url: jdbc:postgresql://${DB_HOST:localhost}:5432/medical
+         username: ${DB_USER:admin}
+         password: ${DB_PASS:admin}
+       jpa:
+         hibernate.ddl-auto: validate
+     keycloak:
+       auth-server-url: ${KEYCLOAK_URL:http://localhost:8080/auth}
+     ```
+   - Dockerfile for Java service:
+     ```dockerfile
+     FROM eclipse-temurin:17-jdk-alpine
+     VOLUME /tmp
+     COPY target/*.jar app.jar
+     ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+     ```
+   - `.gitignore` entries:
+     ```gitignore
+     # Java
+     target/
+     .classpath
+     .project
+     # Node
+     node_modules/
+     .env
+     # Docker
+     docker-compose.override.yml
+     # Secrets
+     **/keystore.*
+     **/application-local.yml
+     ```
+
+3. **Initial Setup Commands:**
+   ```bash
+   # Initialize repo
+   git init
+   git branch -M main
+   git remote add origin https://github.com/[your-org]/medical-blockchain.git
+
+   # Create base structure
+   mkdir -p backend/{user-management-service,document-service,blockchain-service}/src/{main,test}/java/com/medical
+   mkdir -p frontend/src/{components,hooks,layouts} blockchain/{chaincode,network-config} devops/{docker,kubernetes}
+
+   # Add basic files
+   touch .gitignore README.md pom.xml docs/API-SPEC.md
